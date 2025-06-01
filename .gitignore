@@ -23,3 +23,9 @@ local_settings.py
 dist/
 build/
 *.egg-info/
+
+#media
+media/
+
+#migrations
+migrations/
