@@ -135,3 +135,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+DJANGO_VITE = {
+  "default": {
+    "dev_mode": DEBUG
+  }
+}
