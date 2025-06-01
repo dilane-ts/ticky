@@ -1,0 +1,28 @@
+{
+  "name": "ticky",
+  "version": "1.0.0",
+  "description": "Ticky est une plateforme moderne de vente de billets en ligne qui permet aux organisateurs de créer et gérer leurs événements, et aux utilisateurs d'acheter des billets en toute simplicité.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dilane-ts/ticky.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dilane-ts/ticky/issues"
+  },
+  "homepage": "https://github.com/dilane-ts/ticky#readme",
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.8",
+    "tailwindcss": "^4.1.8"
+  }
+}
