@@ -1,3 +1,1 @@
-import '@/css/main.css';
-
-console.log('Hello from Ticky')
+import '../css/main.css';

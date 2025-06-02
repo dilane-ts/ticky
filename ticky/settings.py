@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_vite',
     'user',
-    'event'
+    'event',
+    'sale'
 ]
 
 MIDDLEWARE = [
@@ -120,11 +121,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIR = [
-    BASE_DIR / "assets"
+STATICFILES_DIRS = [
+    BASE_DIR / "assets",
+    BASE_DIR / "static"
 ]
 
-STATIC_ROOT = BASE_DIR / "assets"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -141,3 +143,12 @@ DJANGO_VITE = {
     "dev_mode": DEBUG
   }
 }
+
+NOTCHPAY_PUBLIC_API_KEY = "pk.khg7wWaG1sLe6aqlMVdzO76SY54LiIFMBV7X4GXi9kvLib7i8t81m4Xzc6S2QtEebRTMDbSK8WtEPDxrJs5BG7Z2Fs4IELH0cBd36scVpXJvybsVbBEFzdKxvIHpS"
+LOGIN_URL = "/login"
+AUTH_USER_MODEL = 'user.User'   
+
+AUTHENTICATION_BACKENDS = [
+    'user.backends.PhoneAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',  # backup
+]

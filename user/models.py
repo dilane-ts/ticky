@@ -1,17 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-class User(models.Model):
+class User(AbstractUser):
     ROLES = [
         ('admin', 'admin'),
         ('organizer', 'organizer'),
         ('user', 'user'),
     ]
 
-    name = models.CharField(max_length=128,blank=False)
     email = models.EmailField()
     password = models.CharField(blank=False)
+    phone = models.CharField(unique=True)
     role = models.CharField(choices=ROLES,max_length=32, default='user')
 
+    USERNAME_FIELD = "phone"
+    REQUIRED_FIELDS = ['username', 'email', 'role']
 
 class Order(models.Model):
     STATUS = [
@@ -20,6 +23,7 @@ class Order(models.Model):
     ]
 
     status = models.CharField(choices=STATUS,default='progress')
+    reference = models.CharField(null=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
 
 class Payement(models.Model):

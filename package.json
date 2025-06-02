@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.8",
+    "notchpay.js": "^1.0.1",
     "tailwindcss": "^4.1.8"
   }
 }

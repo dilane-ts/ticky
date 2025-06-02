@@ -23,7 +23,7 @@ class TypeTicket(models.Model):
     price = models.DecimalField(max_digits=10,decimal_places=2)
     quota = models.IntegerField()
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='type_tickets')
 
 class Ticket(models.Model):
 
