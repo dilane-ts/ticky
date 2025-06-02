@@ -144,7 +144,10 @@ DJANGO_VITE = {
   }
 }
 
-NOTCHPAY_PUBLIC_API_KEY = "pk.khg7wWaG1sLe6aqlMVdzO76SY54LiIFMBV7X4GXi9kvLib7i8t81m4Xzc6S2QtEebRTMDbSK8WtEPDxrJs5BG7Z2Fs4IELH0cBd36scVpXJvybsVbBEFzdKxvIHpS"
+import os
+
+NOTCHPAY_PUBLIC_API_KEY = os.environ.get('NOTCHPAY_PUBLIC_API_KEY') or "pk_test.tavxzM2sZKxs0AxCcAemD0ClHo1uR2lbAkQbT6C7mLoVfpdMC4ab3A84V4zY5e0vkiLtO6wweGT86gxmzbbFizjT1IolR17gp6ddq9XWwtYieTNO3mimUoDUqL5Ai"
+NOTCHPAY_WEBHOOK_SECRET = os.environ.get('NOTCHPAY_WEBHOOK_SECRET') or "sk_test.oNndbHD55rkrrOMxwfvz5sJv8xTM3R7lFJtflTzqyLQwVJM1gGnlrxxHaYNtS1mpcWiQKtdni8QD2NmQtHwSbVQD2phpdFkQdXHdGFCWxkiVt4uU5nn8yv5dtX9CN"
 LOGIN_URL = "/login"
 AUTH_USER_MODEL = 'user.User'   
 
@@ -152,3 +155,12 @@ AUTHENTICATION_BACKENDS = [
     'user.backends.PhoneAuthBackend',
     'django.contrib.auth.backends.ModelBackend',  # backup
 ]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Use TLS (Transport Layer Security) for encryption
+EMAIL_HOST_USER = 'lefakongdilane@gmail.com'  # Your full Gmail address
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') or 'xrql ahnb ewjh wzxc' # The 16-character app password
+DEFAULT_FROM_EMAIL = 'lefakongdilane@gmail.com'

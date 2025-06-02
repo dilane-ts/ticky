@@ -1,7 +1,9 @@
 from event.models import TypeTicket, Ticket
 from user.models import Order
 import uuid
+from .notchpay import NotchPay
 from django.shortcuts import redirect
+from django.conf import settings
 
 def process_order(request, cleaned_data):
     ticket_type_id = cleaned_data['ticket_type']
@@ -18,5 +20,11 @@ def process_order(request, cleaned_data):
         ticket.order = order
         ticket.save()
     
-    
-    return redirect(f'/checkout/{order.pk}')
+    order = Order.objects.get(id=order.pk)
+    amount = 0
+    for ticket in order.ticket_set.all():
+        amount += ticket.type.price
+    notchpay = NotchPay(settings.NOTCHPAY_PUBLIC_API_KEY, order)
+    notchpay.initialize(request, amount)
+    notchpay.complete()
+    return redirect(f'/order/{order.pk}')
