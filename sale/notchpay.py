@@ -20,7 +20,7 @@ def get_operator(phone):
     # Get the second digit (after the initial '6')
     second_digit = int(phone[1])
     # Get the first three digits of the local number (after the initial '6')
-    first_three_digits = int(phone[1:4])
+    first_three_digits = int(phone[1:3])
 
     # MTN Cameroon Prefixes
     # The second digit is 7 or 8, OR the first three digits are between 650 and 654
