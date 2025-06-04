@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import RegisterForm, LoginForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from sale.utils import process_order
 from .models import User
 
@@ -51,3 +51,7 @@ def register(request):
       form = RegisterForm()
 
    return render(request, "user/register.html", {"form": form})
+
+def logout_view(request):
+   logout(request)
+   return redirect('home')
