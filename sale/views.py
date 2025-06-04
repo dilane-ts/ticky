@@ -22,12 +22,13 @@ import json
 from django.core.mail import EmailMessage
 
 def index(request):
-    events =Event.objects.all()
+    events = Event.objects.all()
+    
     return render(request, "sale/index.html", context={
         "events": events
     })
 
-def event_detail(request, pk):
+def event_detail(request, pk, slug):
     event = Event.objects.get(id=pk)
     return render(request, "sale/detail.html", context={
         "event": event
@@ -123,6 +124,7 @@ def payment_sucess(request, reference=None):
     )
     email.attach(f'tickets_commande_{order.pk}.pdf', pdf_data, 'application/pdf')
     email.send()
+    print("okay")
 
     return HttpResponse("Payment valide")
 
@@ -180,9 +182,52 @@ def notchpay_webhook(request):
 
     try:
         event = json.loads(payload.decode('utf-8'))
-        payment_sucess(request, event['data']['reference'])
-        print("Événement reçu :", event)
+        print(event)
+        if event['event'] == 'payment.complete':
+            payment_sucess(request, event['data']['reference'])
+            print("Événement reçu :", event)
+        elif event['event'] == 'payment.failed':
+            order = Order.objects.get(reference=event['data']['reference'])
+            subject = "Action requise : Échec du paiement pour votre commande"
+            message = f"""
+            Bonjour {order.user.username},
+
+            Nous avons constaté que le paiement de votre commande (Référence: {order.reference}) n'a pas abouti.
+
+            Détails de la commande :
+            - Événement : {order.ticket_set.first().type.event.name}
+            - Montant total : {order.total_amount} XAF
+            - Date de la commande : {order.created_at.strftime('%d/%m/%Y')}
+
+            Pour finaliser votre achat, veuillez cliquer sur le lien ci-dessous :
+            http://ticky.com/order/{order.id}
+
+            Si vous rencontrez des difficultés, n'hésitez pas à nous contacter.
+
+            Cordialement,
+            L'équipe Ticky
+            """
+
+            email = EmailMessage(
+                subject=subject,
+                body=message,
+                from_email='lefakongdilane@gmail.com',
+                to=[order.user.email],
+            )
+            email.send()
+            print("payment failed")
+        elif event['event'] == 'payment.canceled':
+            order = Order.objects.get(reference=event['data']['reference'])
+            for ticket in order.ticket_set.all():
+                ticket.status = 'nopay'
+                ticket.save()
+            order.status = 'canceled'
+            order.save()
+            print("payment canceled")
+        else:
+            pass
 
         return HttpResponse("Webhook reçu", status=200)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print(e)
         return JsonResponse({'error': 'Payload JSON invalide'}, status=400)

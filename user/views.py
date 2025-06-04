@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm, LoginForm
 from django.contrib.auth import authenticate, login
 from sale.utils import process_order
+from .models import User
 
 def login_page(request):
    form = LoginForm(request.POST or None)
@@ -30,7 +31,16 @@ def register(request):
    if request.method == "POST":
       form = RegisterForm(request.POST)
       if form.is_valid():
-         pass
+         user = form.save(commit=False)
+         user.set_password(form.cleaned_data['password'])
+         user.save()
+         login(user)
+         request.user = user
+         pending_order = request.session.pop('pending_order', None)
+         if pending_order:
+            return process_order(request, pending_order)
+         next_url = request.POST.get('next') or '/'
+         return redirect(next_url)
    else:
       form = RegisterForm()
 

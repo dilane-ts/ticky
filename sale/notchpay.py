@@ -64,7 +64,7 @@ class NotchPay:
             },
             "description": f"Payment for self.order {self.order.pk}",
             "reference": reference,
-            "callback": callback_url,
+            # "callback": callback_url,
         }
         
         response = requests.post(f"{self.base_url}/payments/initialize", headers=self.headers, json=payload)

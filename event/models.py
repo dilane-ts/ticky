@@ -1,5 +1,6 @@
 from django.db import models
 from user.models import Order
+from django.utils.text import slugify
 
 class Event(models.Model):
 
@@ -16,6 +17,11 @@ class Event(models.Model):
     time_end = models.DateField()
     image = models.ImageField(upload_to='images/')
     status = models.CharField(choices=STATUS, default='draft')
+    slug = models.SlugField(unique=True, blank=True)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 class TypeTicket(models.Model):
     name = models.CharField()

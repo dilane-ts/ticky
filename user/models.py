@@ -19,7 +19,8 @@ class User(AbstractUser):
 class Order(models.Model):
     STATUS = [
         ('progress','progress'),
-        ('completed','completed')
+        ('completed','completed'),
+        ('canceled', 'canceled')
     ]
 
     status = models.CharField(choices=STATUS,default='progress')
