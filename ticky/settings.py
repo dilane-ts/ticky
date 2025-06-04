@@ -80,22 +80,22 @@ WSGI_APPLICATION = 'ticky.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ['POSTGRES_DB'],
-#         'USER': os.environ['POSTGRES_USER'],
-#         'PASSWORD': os.environ['POSTGRES_PASSWORD'],
-#         'HOST': os.environ['DB_HOST'],
-#         'PORT': os.environ['DB_PORT'],
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
+    }
+}
 
 
 
@@ -154,7 +154,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DJANGO_VITE = {
   "default": {
-    "dev_mode": DEBUG
+    "dev_mode": False
   }
 }
 
@@ -176,3 +176,20 @@ EMAIL_USE_TLS = True  # Use TLS (Transport Layer Security) for encryption
 EMAIL_HOST_USER = 'lefakongdilane@gmail.com'  # Your full Gmail address
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') or 'xrql ahnb ewjh wzxc' # The 16-character app password
 DEFAULT_FROM_EMAIL = 'lefakongdilane@gmail.com'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://tic.smartcloudservices.cloud',
+    'https://www.tic.smartcloudservices.cloud',
+]
+
+CSRF_COOKIE_SECURE = True  # Si vous utilisez HTTPS
+CSRF_COOKIE_HTTPONLY = True
+CSRF_USE_SESSIONS = False
+
+# 4. Configuration des cookies de session
+SESSION_COOKIE_SECURE = True  # Si vous utilisez HTTPS
+SESSION_COOKIE_HTTPONLY = True
+
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
