@@ -15,7 +15,6 @@ def login_page(request):
       user = authenticate(request, username=phone, password=password)
       if user is not None:
          login(request, user)
-         request.user = user
          pending_order = request.session.pop('pending_order', None)
          if pending_order:
             return process_order(request, pending_order)
@@ -31,11 +30,18 @@ def register(request):
    if request.method == "POST":
       form = RegisterForm(request.POST)
       if form.is_valid():
-         user = form.save(commit=False)
+         user = User()
+         user.username = form.cleaned_data['name']
+         user.phone = form.cleaned_data['phone']
+         user.email = form.cleaned_data['email']
          user.set_password(form.cleaned_data['password'])
          user.save()
-         login(user)
-         request.user = user
+         login(request, authenticate(
+                request,
+                username=user.phone,  # Use phone as username
+                password=form.cleaned_data['password']
+            ))
+
          pending_order = request.session.pop('pending_order', None)
          if pending_order:
             return process_order(request, pending_order)

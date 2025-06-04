@@ -22,7 +22,7 @@
     </div>
 
     <!-- Login Form -->
-    <form class="mt-8 space-y-6" method="POST" action="{% url 'login' %}">
+    <form class="mt-8 space-y-6" method="POST" action="{% url 'register' %}">
         {% csrf_token %}
         
         <!-- Error Messages -->
@@ -72,7 +72,7 @@
                 <input 
                     id="phone" 
                     name="phone" 
-                    type="number" 
+                    type="text" 
                     required 
                     class="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10"
                     placeholder="+237670000000"

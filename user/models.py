@@ -9,7 +9,6 @@ class User(AbstractUser):
     ]
 
     email = models.EmailField()
-    password = models.CharField(blank=False)
     phone = models.CharField(unique=True)
     role = models.CharField(choices=ROLES,max_length=32, default='user')
 
@@ -20,6 +19,7 @@ class Order(models.Model):
     STATUS = [
         ('progress','progress'),
         ('completed','completed'),
+        ('failed', 'failed'),
         ('canceled', 'canceled')
     ]
 

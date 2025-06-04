@@ -9,5 +9,6 @@ urlpatterns = [
     path('payment/success/',  views.payment_sucess, name="payment_sucess"),
     path('ticket/validate/<str:identifier>', views.validate_ticket ,name="ticket_validate"),
     path('order/download/<int:order_id>',  views.download_ticket ,name="download_order"),
-     path('webhooks/notchpay/', views.notchpay_webhook, name='notchpay_webhook'),
+    path('webhooks/notchpay/', views.notchpay_webhook, name='notchpay_webhook'),
+    path('checkout/order/<int:pk>/', views.checkout, name='order_checkout')
 ]

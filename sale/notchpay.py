@@ -1,6 +1,7 @@
 import requests
 from django.urls import reverse
 import uuid
+from .exceptions import NotchPayError
 
 def get_operator(phone):
     # Remove any non-digit characters and ensure it's a string
@@ -51,49 +52,71 @@ class NotchPay:
         self.order = order
 
     def initialize(self, request, amount):
-        reference = "ti_" + str(self.order.pk) + "_" + str(uuid.uuid4())
-        callback_url = request.build_absolute_uri(reverse('payment_sucess'))
-        print(callback_url)
-        payload = {
-            "amount": int(amount),
-            "currency": "XAF",
-            "customer": {
-                "name": self.order.user.username,
-                "email": self.order.user.email,
-                "phone": self.order.user.phone
-            },
-            "description": f"Payment for self.order {self.order.pk}",
-            "reference": reference,
-            # "callback": callback_url,
-        }
-        
-        response = requests.post(f"{self.base_url}/payments/initialize", headers=self.headers, json=payload)
-        if response.status_code == 201:
-            data = response.json()
-            print(data)
-            self.order.reference = data['transaction']['reference']
+        try:
+            reference = "ti_" + str(self.order.pk) + "_" + str(uuid.uuid4())
+            callback_url = request.build_absolute_uri(reverse('payment_sucess'))
+            print(callback_url)
+            payload = {
+                "amount": int(amount),
+                "currency": "XAF",
+                "customer": {
+                    "name": self.order.user.username,
+                    "email": self.order.user.email,
+                    "phone": self.order.user.phone
+                },
+                "description": f"Payment for self.order {self.order.pk}",
+                "reference": reference,
+                # "callback": callback_url,
+            }
+            
+            response = requests.post(f"{self.base_url}/payments/initialize", headers=self.headers, json=payload)
+            if response.status_code == 201:
+                data = response.json()
+                print(data)
+                self.order.reference = data['transaction']['reference']
+                self.order.save()
+                return data
+            else:
+                error_data = response.json()
+                self.order.status = 'failed'
+                self.order.save()
+                raise NotchPayError(
+                    message=error_data.get('message', 'Payment initialization failed'),
+                    code=response.status_code
+                )
+        except requests.exceptions.RequestException as e:
+            self.order.status = 'failed'
             self.order.save()
-            return data
-        else:
-            raise ValueError(response.json()['message'])
+            raise NotchPayError(f"Network error: {str(e)}")
         
     def complete(self):
-        operator = get_operator(self.order.user.phone)
-        if operator not in ["MTN", "Orange"]:
-            raise ValueError(operator)
-        
-        payload = {
-            "channel": "cm.mtn" if operator == "MTN" else "cm.orange",
-            "data": {
-                "phone": self.order.user.phone
+        try:
+            operator = get_operator(self.order.user.phone)
+            if operator not in ["MTN", "Orange"]:
+                raise ValueError(operator)
+            
+            payload = {
+                "channel": "cm.mtn" if operator == "MTN" else "cm.orange",
+                "data": {
+                    "phone": self.order.user.phone
+                }
             }
-        }
-        response = requests.post(f"{self.base_url}/payments/{self.order.reference}", headers=self.headers, json=payload)
-        print(response.json())
-        if response.status_code == 202:
-            data = response.json()
-            return data
-        else:
+            response = requests.post(f"{self.base_url}/payments/{self.order.reference}", headers=self.headers, json=payload)
             print(response.json())
-            raise ValueError(response.json()['message'])
+            if response.status_code == 202:
+                data = response.json()
+                return data
+            else:
+                print(response.json())
+                self.order.status = 'failed'
+                self.order.save()
+                error_data = response.json()
+                raise NotchPayError(
+                    message=error_data.get('message', 'Payment completion failed'),
+                    code=response.status_code
+                )
+        except requests.exceptions.RequestException as e:
+            self.order.status = 'failed'
+            self.order.save()
+            raise NotchPayError(f"Network error: {str(e)}")
 

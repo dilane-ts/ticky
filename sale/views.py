@@ -20,6 +20,9 @@ import hmac
 import hashlib
 import json
 from django.core.mail import EmailMessage
+from .exceptions import NotchPayError
+from .utils import NotchPay
+from django.contrib import messages
 
 def index(request):
     events = Event.objects.all()
@@ -44,11 +47,34 @@ def ticket_order(request):
                     'ticket_type': form.cleaned_data['ticket_type'],
                     'quantity': form.cleaned_data['quantity'],
                 }
-                return redirect(f'/login')
+                return redirect('register')
             return process_order(request, form.cleaned_data)
     else:
         form = TicketOrderForm()
     return render(request, "sale/detail.html", {'form': form})
+
+def checkout(request, pk):
+    error = None
+    try:
+        order = Order.objects.get(pk=pk)
+    except Order.DoesNotExist as e:
+        return HttpResponse("Order don't exists", status=404)
+
+    amount = 0
+    for ticket in order.ticket_set.all():
+        amount += ticket.type.price
+    try:
+        notchpay = NotchPay(settings.NOTCHPAY_PUBLIC_API_KEY, order)
+        notchpay.initialize(request, amount)
+        notchpay.complete()
+    except NotchPayError as e:
+        error = e.message
+        messages.error(request, error)
+    
+    return render(request, 'sale/order_detail.html', {
+        'order': order,
+        'error': error
+    })
 
 
 def order_page(request, id):
@@ -188,6 +214,9 @@ def notchpay_webhook(request):
             print("Événement reçu :", event)
         elif event['event'] == 'payment.failed':
             order = Order.objects.get(reference=event['data']['reference'])
+            order.status = 'failed'
+            order.save()
+
             subject = "Action requise : Échec du paiement pour votre commande"
             message = f"""
             Bonjour {order.user.username},
