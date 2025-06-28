@@ -1,0 +1,13 @@
+name: Ticky deploy on VPS
+on:
+    push:
+        branches: ["dilane"]
+    pull_request: 
+        branches: ["dilane"]
+jobs:
+    ticky:
+        runs-on: ubuntu-24.04
+        steps:
+        - uses: actions/checkout@v4
+        - name: done action
+        - run: echo 'All done!'
