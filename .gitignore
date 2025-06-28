@@ -24,10 +24,30 @@ dist/
 build/
 *.egg-info/
 
-# Ignorer le répertoire media
+# Media files
 /media/
 
-# Ignorer tous les fichiers de migrations de Django
-**/migrations/
+# Django migrations
 **/migrations/*.py
 !**/migrations/__init__.py
+
+# Node.js / JavaScript
+node_modules/
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+.npm
+package-lock.json
+yarn.lock
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Build output
+/build
+/dist
+.next/
+out/
+.cache/
+assets/

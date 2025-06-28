@@ -1,0 +1,11 @@
+{
+  "static/js/main.js": {
+    "file": "ticky_assets/ticky-Ck_q8a8h.js",
+    "name": "ticky",
+    "src": "static/js/main.js",
+    "isEntry": true,
+    "css": [
+      "ticky_assets/ticky-Dvw8w0gJ.css"
+    ]
+  }
+}

@@ -1,0 +1,98 @@
+{% extends "sale/base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="md:flex">
+        <!-- Image Section -->
+        <div class="md:w-1/2">
+            {% if event.image %}
+                <img src="{{ event.image.url }}" 
+                     alt="{{ event.name }}" 
+                     class="w-full h-64 md:h-full object-cover">
+            {% else %}
+                <div class="w-full h-64 md:h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+                    <span class="text-white text-4xl">🎭</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Content Section -->
+        <div class="md:w-1/2 p-6">
+            <!-- Event Title -->
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ event.name }}</h1>
+                <div class="flex gap-2" >
+                    <div class="text-blue-600 text-sm font-medium mb-2">{{ event.time_start|date:"d M Y" }} - </div>
+                    <div class="text-blue-600 text-sm font-medium mb-2">{{ event.time_end|date:"d M Y" }}</div>
+                </div>
+                <p class="text-gray-600">{{ event.location }}</p>
+            </div>
+            
+            <!-- Ticket Options -->
+            <form method="POST" action="{% url 'ticket_order' %}">
+                {% csrf_token %}
+                <div class="mb-6">
+                    <div class="flex flex-col rounded-lg overflow-hidden">
+                        {% for ticket_type in event.type_tickets.all %}
+                        <label class="flex-1 cursor-pointer border-b border-blue-300">
+                            <input type="radio" name="ticket_type" value="{{ ticket_type.id }}" class="sr-only" {% if forloop.first %}checked{% endif %}>
+                            <div class="ticket-option py-3 px-4 font-medium {% if forloop.first %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                {{ ticket_type.name }}<br>
+                                <span class="text-lg font-bold {% if forloop.first %}text-white{% else %}text-blue-500 hover:bg-blue-200{% endif %} ">{{ ticket_type.price|floatformat:0 }} FCFA</span>
+                                <p class="text-md mt-3">{{ ticket_type.description }}</p>
+                            </div>
+                        </label>
+                        {% empty %}
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="ticket_type" value="standard" class="sr-only" checked>
+                            <div class="py-3 px-4 font-medium text-center bg-blue-600 text-white">
+                                Standard<br>
+                                <span class="text-lg font-bold">{{ event.price }} FCFA</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Quantity Selector -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Nombre de tickets
+                    </label>
+                    <select name="quantity" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        {% for i in "12345" %}
+                        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Buy Button -->
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition duration-200">
+                    Acheter le ticket
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Description Section -->
+    <div class="p-6 border-t border-blue-300">
+        <h2 class="text-xl font-bold text-blue-600 mb-4">Description</h2>
+        <p class="text-gray-700 leading-relaxed">
+            {{ event.description|default:"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse maximus, ex non mattis fringilla, odio diam accumsan leo, id efficitur augue risus et risus. Praesent nibh turpis, congue non odio eu, tempor rutrum ex. Donec suscipit dolor dolor, vel pellentesque nisl condimentum dictum. Curabitur maximus ornare ultricies. Nunc vestibulum ligula quis euismod lobortis." }}
+        </p>
+    </div>
+ </div>
+ 
+ <script>
+ document.querySelectorAll('input[name="ticket_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.ticket-option').forEach(option => {
+            option.classList.remove('bg-blue-600', 'text-white');
+            option.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+        });
+        this.nextElementSibling.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+        this.nextElementSibling.classList.add('bg-blue-600', 'text-white');
+    });
+ });
+ </script>
+{% endblock %}

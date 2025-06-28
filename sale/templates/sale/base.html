@@ -1,0 +1,94 @@
+{% load static %}
+{% load django_vite %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticky - Découvrez des événements exceptionnels</title>
+    
+    {% vite_hmr_client %}
+    {% vite_asset 'static/js/main.js' %}
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="{% url 'home' %}">
+                    <div class="flex items-center">
+                        <img src="{% static 'images/logo.png' %}" alt="Ticky" class="h-8 w-auto" />
+                    </div>
+                </a>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Événements</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">À propos</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
+                </nav>
+                
+                {% if user.is_authenticated %}
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-700 font-medium">{{ user.username }}</span>
+                        <form method="POST" action="{% url 'logout' %}" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200">
+                                Déconnexion
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                        Connexion
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 text-white py-20 relative overflow-hidden">
+        <!-- Decorative elements -->
+        <div class="absolute top-10 right-10 w-20 h-20 bg-white bg-opacity-10 rounded-full"></div>
+        <div class="absolute bottom-10 left-10 w-16 h-16 bg-blue-400 bg-opacity-20 rounded-full"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                Découvrez des événements exceptionnels
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
+                Achetez des tickets pour les meilleurs événements ou créez votre propre événement en quelques clics
+            </p>
+            
+            <!-- Search Bar -->
+            <form method="GET" action="#" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input 
+                    type="text" 
+                    name="q"
+                    placeholder="Rechercher un événement" 
+                    class="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
+                    Rechercher
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Main Content Block -->
+    <main class="py-16 bg-gray-50">
+        {% block content %}
+        
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-blue-100">© 2025 Ticky. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+</html>

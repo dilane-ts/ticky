@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 from django.conf.global_settings import MEDIA_URL, MEDIA_ROOT
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-cuv2wwoly3o93@&r7vd_f@el4!rjpsaa^+h-lf48&a)!&oj_ae
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_vite',
     'user',
-    'event'
+    'event',
+    'sale'
 ]
 
 MIDDLEWARE = [
@@ -58,10 +60,12 @@ ROOT_URLCONF = 'ticky.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -76,12 +80,24 @@ WSGI_APPLICATION = 'ticky.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
     }
 }
+
+
 
 
 # Password validation
@@ -119,6 +135,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "assets",
+    BASE_DIR / "static"
+]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -129,3 +151,45 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+DJANGO_VITE = {
+  "default": {
+    "dev_mode": False
+  }
+}
+
+NOTCHPAY_PUBLIC_API_KEY = os.environ.get('NOTCHPAY_PUBLIC_API_KEY') or "pk_test.tavxzM2sZKxs0AxCcAemD0ClHo1uR2lbAkQbT6C7mLoVfpdMC4ab3A84V4zY5e0vkiLtO6wweGT86gxmzbbFizjT1IolR17gp6ddq9XWwtYieTNO3mimUoDUqL5Ai"
+NOTCHPAY_WEBHOOK_SECRET = os.environ.get('NOTCHPAY_WEBHOOK_SECRET') or "hsk_test.eTjQ6fF70x5LLXgdqV7edArSqQz1UV3AAhX28riQlus8Pk7egcfRsrpFKKwmoX5XxZtF5YqPkI580MpofBdHZQWbrewDXQKk7mNz4prHmZm9iJRYh2BA2uOjWCJXV"
+LOGIN_URL = "/login"
+AUTH_USER_MODEL = 'user.User'   
+
+AUTHENTICATION_BACKENDS = [
+    'user.backends.PhoneAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',  # backup
+]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Use TLS (Transport Layer Security) for encryption
+EMAIL_HOST_USER = 'lefakongdilane@gmail.com'  # Your full Gmail address
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') or 'xrql ahnb ewjh wzxc' # The 16-character app password
+DEFAULT_FROM_EMAIL = 'lefakongdilane@gmail.com'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://tic.smartcloudservices.cloud',
+    'https://www.tic.smartcloudservices.cloud',
+]
+
+CSRF_COOKIE_SECURE = True  # Si vous utilisez HTTPS
+CSRF_COOKIE_HTTPONLY = True
+CSRF_USE_SESSIONS = False
+
+# 4. Configuration des cookies de session
+SESSION_COOKIE_SECURE = True  # Si vous utilisez HTTPS
+SESSION_COOKIE_HTTPONLY = True
+
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

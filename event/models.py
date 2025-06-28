@@ -1,5 +1,6 @@
 from django.db import models
 from user.models import Order
+from django.utils.text import slugify
 
 class Event(models.Model):
 
@@ -16,6 +17,11 @@ class Event(models.Model):
     time_end = models.DateField()
     image = models.ImageField(upload_to='images/')
     status = models.CharField(choices=STATUS, default='draft')
+    slug = models.SlugField(unique=True, blank=True)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 class TypeTicket(models.Model):
     name = models.CharField()
@@ -23,7 +29,7 @@ class TypeTicket(models.Model):
     price = models.DecimalField(max_digits=10,decimal_places=2)
     quota = models.IntegerField()
 
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='type_tickets')
 
 class Ticket(models.Model):
 
