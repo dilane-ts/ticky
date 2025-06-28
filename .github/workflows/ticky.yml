@@ -18,7 +18,11 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           port: ${{ secrets.VPS_PORT }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          script: whoami
+          script: |
+            cd ~/ticky
+            git pull origin dilane
+            docker compose down
+            docker compose up -d --build
       
       - name: Message
         run: echo 'All Done'
